@@ -33,7 +33,7 @@
 把仓库克隆到本地，再安装 Python 依赖和截图用的浏览器内核。
 
 ```bash
-git clone https://github.com/liyupi/ai-promo-video-maker.git
+git clone https://github.com/liyupi/ai-promo-video-maker.git ai-promo-video-maker
 cd ai-promo-video-maker
 pip install -r template/requirements.txt
 playwright install chromium
@@ -173,7 +173,7 @@ flowchart LR
 ## 项目结构
 
 ```text
-产品宣传视频制作器/
+ai-promo-video-maker/
 ├── AGENTS.md        # AI 的工作规范，整个项目的核心
 ├── SKILL.md         # 安装成 Skill 时的入口，内容只是指向 AGENTS.md
 ├── CLAUDE.md        # 让 Claude Code 也读取 AGENTS.md
@@ -181,6 +181,9 @@ flowchart LR
 ├── template/        # 每个新项目都从这里复制：Remotion 工程、网页播放页、全套脚本
 └── outputs/         # 克隆用法下，你的成片会放在这里（不会被提交到 Git）
 ```
+
+> **AI 工具专属目录不进 Git**
+> `.cursor/`、`.claude/`、`.codex/`、`.pi/` 这类目录只属于你的本机配置，已写进 `.gitignore`，不会随仓库分发。所以这些目录里的东西别人克隆后根本拿不到：请勿往里写脚本、素材、规范或模板，也请在提交文档、代码、注释时不要引用这些路径。你需要的一切都在上面这几个受版本控制的目录里。
 
 每支成片的目录里除了视频文件，还会有 `需求确认.md`（你拍板的所有决定和每一轮修改记录）、`调研笔记.md`（每个事实和素材的出处）、可以直接部署的网页播放版，以及完整的工程源码。
 
@@ -203,6 +206,9 @@ AI 会在需求问询时和你确认版权边界，并把每张素材的来源�
 
 **可以只用它做视频的一部分吗？**
 可以。`template/` 是一个独立的 Remotion 工程，里面的混音、节拍分析、4K 截图、成片检测等脚本都可以单独使用，各个脚本的用法写在 `AGENTS.md` 的「脚本速查」一节里。
+
+**我的 `.cursor/`、`.claude/`、`.pi/` 目录为什么提交不上？**
+这是故意的。这类 AI 工具专属目录只属于你本机，已经在 `.gitignore` 里全部忽略，既不提交、也不随仓库分发。所以请不要往里写任何项目需要的东西，也不要在文档或代码里引用这些路径——别人克隆后拿到的是一个空目录。本机自己用的扩展、提示、快捷命令可以留着，但规范里所有能力都写了「没有它时怎么办」，不依赖任何一个工具专属目录。
 
 ## 参与贡献
 
