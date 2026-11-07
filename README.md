@@ -6,7 +6,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![Remotion](https://img.shields.io/badge/Remotion-4-0B84F3)
-![支持](https://img.shields.io/badge/支持-Cursor%20%7C%20Claude%20Code%20%7C%20Codex-8A2BE2)
+![支持](https://img.shields.io/badge/支持-Cursor%20%7C%20Claude%20Code%20%7C%20Codex%20%7C%20pi-8A2BE2)
 
 ![五支成片的开场合集](docs/images/showcase.gif)
 
@@ -18,13 +18,13 @@
 
 做一支像样的产品宣传片，通常要经过写脚本、找素材、设计画面、剪辑卡点、配音混音好几道工序。外包一支往往要花几千甚至上万元，自己做又得学会一整套专业软件。
 
-这个项目把整套制作流程写成了一份 AI 能读懂、能照着执行的工作规范（`AGENTS.md`），并配上一个 Remotion 视频工程模板和十几个辅助脚本。你可以把仓库克隆到本地，用 Cursor、Claude Code、Codex 这类 AI 编程工具打开目录；也可以把它安装成一个 Skill，在任何项目里随时调用。无论哪种方式，你都只需要用一句话说明想给什么做宣传片。至于产品有哪些卖点、该用什么风格、哪些画面能打动人，这些不确定的事情都由 AI 先去调研，再拿着具体的选项来问你。
+这个项目把整套制作流程写成了一份 AI 能读懂、能照着执行的工作规范（`AGENTS.md`），并配上一个 Remotion 视频工程模板和十几个辅助脚本。你可以把仓库克隆到本地，用 Cursor、Claude Code、Codex、pi 这类 AI 编程工具打开目录；也可以把它安装成一个 Skill，在任何项目里随时调用。无论哪种方式，你都只需要用一句话说明想给什么做宣传片。至于产品有哪些卖点、该用什么风格、哪些画面能打动人，这些不确定的事情都由 AI 先去调研，再拿着具体的选项来问你。
 
 这里说的「产品」范围很广，App、网站、SaaS 工具、开源项目、课程教程、AI 模型、社区和线下活动都可以，只要它有能拿出来展示的界面或作品。
 
 ## 快速开始
 
-制作过程会用到 Node.js 18 以上版本、Python 3.9 以上版本和 ffmpeg，请先确认电脑上已经装好这三样软件。其余的 Python 依赖和截图用的浏览器内核，AI 在开工前做环境体检时会提示你安装。
+制作过程会用到 Node.js 18 以上版本、Python 3.9 以上版本和 ffmpeg，请先确认电脑上已经装好这三样软件。用 pi 运行时，pi 本身要求 Node.js 22.19 以上。其余的 Python 依赖和截图用的浏览器内核，AI 在开工前做环境体检时会提示你安装。
 
 接下来可以从两种用法里选一种。如果只是想试一试，或者要宣传的产品没有本地代码，选择克隆仓库更直接；如果你想在自己的产品仓库里随时说一句「给这个项目做个宣传片」，就安装成 Skill。
 
@@ -33,7 +33,7 @@
 把仓库克隆到本地，再安装 Python 依赖和截图用的浏览器内核。
 
 ```bash
-git clone https://github.com/liyupi/ai-promo-video-maker.git
+git clone https://github.com/liyupi/ai-promo-video-maker.git ai-promo-video-maker
 cd ai-promo-video-maker
 pip install -r template/requirements.txt
 playwright install chromium
@@ -173,7 +173,7 @@ flowchart LR
 ## 项目结构
 
 ```text
-产品宣传视频制作器/
+ai-promo-video-maker/
 ├── AGENTS.md        # AI 的工作规范，整个项目的核心
 ├── SKILL.md         # 安装成 Skill 时的入口，内容只是指向 AGENTS.md
 ├── CLAUDE.md        # 让 Claude Code 也读取 AGENTS.md
@@ -181,6 +181,9 @@ flowchart LR
 ├── template/        # 每个新项目都从这里复制：Remotion 工程、网页播放页、全套脚本
 └── outputs/         # 克隆用法下，你的成片会放在这里（不会被提交到 Git）
 ```
+
+> **AI 工具专属目录不进 Git**
+> `.cursor/`、`.claude/`、`.codex/`、`.pi/` 这类目录只属于你的本机配置，已写进 `.gitignore`，不会随仓库分发。所以这些目录里的东西别人克隆后根本拿不到：请勿往里写脚本、素材、规范或模板，也请在提交文档、代码、注释时不要引用这些路径。你需要的一切都在上面这几个受版本控制的目录里。
 
 每支成片的目录里除了视频文件，还会有 `需求确认.md`（你拍板的所有决定和每一轮修改记录）、`调研笔记.md`（每个事实和素材的出处）、可以直接部署的网页播放版，以及完整的工程源码。
 
@@ -203,6 +206,9 @@ AI 会在需求问询时和你确认版权边界，并把每张素材的来源�
 
 **可以只用它做视频的一部分吗？**
 可以。`template/` 是一个独立的 Remotion 工程，里面的混音、节拍分析、4K 截图、成片检测等脚本都可以单独使用，各个脚本的用法写在 `AGENTS.md` 的「脚本速查」一节里。
+
+**我的 `.cursor/`、`.claude/`、`.pi/` 目录为什么提交不上？**
+这是故意的。这类 AI 工具专属目录只属于你本机，已经在 `.gitignore` 里全部忽略，既不提交、也不随仓库分发。所以请不要往里写任何项目需要的东西，也不要在文档或代码里引用这些路径——别人克隆后拿到的是一个空目录。本机自己用的扩展、提示、快捷命令可以留着，但规范里所有能力都写了「没有它时怎么办」，不依赖任何一个工具专属目录。
 
 ## 参与贡献
 

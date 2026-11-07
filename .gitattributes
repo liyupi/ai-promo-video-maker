@@ -1,0 +1,66 @@
+# 换行与编码：仓库内统一 LF，避免 macOS / Windows 协作时整文件 diff
+* text=auto eol=lf
+
+# 脚本类必须 LF，否则在 Linux / macOS 上直接报「解释器不存在」
+*.sh   text eol=lf
+*.bash text eol=lf
+*.py   text eol=lf
+*.mjs  text eol=lf
+*.js   text eol=lf
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.json text eol=lf
+
+# Windows 专属脚本保留 CRLF（目前仓库里没有，加着以后用）
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# 文档与配置
+*.md         text eol=lf
+*.txt        text eol=lf
+*.css        text eol=lf
+*.html       text eol=lf
+LICENSE      text eol=lf   merge=ours  -diff
+.env.example text eol=lf
+.gitignore   text eol=lf
+
+# 二进制素材：不做换行转换、不出文本 diff
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.avif  binary
+*.ico   binary
+*.psd   binary
+*.mp4   binary
+*.mov   binary
+*.webm  binary
+*.mkv   binary
+*.wav   binary
+*.mp3   binary
+*.m4a   binary
+*.aac   binary
+*.ogg   binary
+*.flac  binary
+*.otf   binary
+*.ttf   binary
+*.woff  binary
+*.woff2 binary
+*.zip   binary
+*.7z    binary
+*.pdf   binary
+
+# 依赖锁文件：生成物，折叠进语言统计，也不值得看 diff
+template/package-lock.json linguist-generated=true -diff
+
+# git archive 产物里不必带成片目录与文档
+outputs/**        export-ignore
+docs/images/      export-ignore
+/README.md        export-ignore
+/AGENTS.md        export-ignore
+/CLAUDE.md        export-ignore
+.gitignore        export-ignore
+.gitattributes    export-ignore
+.gitkeep          export-ignore
