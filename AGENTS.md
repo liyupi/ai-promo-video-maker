@@ -46,6 +46,8 @@ Skill 用法另有四条约定：
 - 不要把任何项目文件写进 `<工具目录>`：Skill 更新时整个目录会被覆盖。
 - ElevenLabs key 放在工作区根目录的 `.env` 或环境变量 `ELEVENLABS_API_KEY` 里。
 
+启动方式：克隆用法直接在仓库根目录打开 AI 工具即可；Skill 用法用各工具自带的 Skill 调用方式（如 pi 的 `/skill:promo-video-maker`），或者直接说「给这个项目做一支宣传片」。不需要安装任何额外的东西。
+
 ## 目录结构
 
 ```
@@ -85,15 +87,16 @@ Skill 用法另有四条约定：
 
 ## 工具对照
 
-本规范在 Cursor、Claude Code、Codex 等 AI 编程工具里都能用。不同工具的能力名字不同，按下表找替代；**没有某个能力时走右列的办法，不要因此跳过对应步骤**。
+本规范在 Cursor、Claude Code、Codex、pi 等 AI 编程工具里都能用。不同工具的能力名字不同，按下表找替代；**没有某个能力时走右列的办法，不要因此跳过对应步骤**。
 
 | 要做的事 | 有这类工具时 | 没有时 |
 |---|---|---|
-| 结构化提问（第 2 步） | Cursor 的 `AskQuestion`、Claude Code 的 `AskUserQuestion` | 在回复里用编号列出问题和选项（第一项写推荐），请用户按编号回复 |
-| 生成风格样帧、背景、角色（第 2、4 步） | Cursor 的 `GenerateImage`、Codex 的图像生成 | 用 HTML/CSS 或 Remotion 代码画一张 1920×1080 的样帧，`node scripts/stills.mjs` 或 Playwright 截出来；角色类风格用 emoji / SVG 示意 |
-| 联网搜索与抓取（第 1、4 步） | firecrawl、工具自带的网页搜索 / 抓取 | `curl` + 读 HTML；GitHub 数据用 `gh api` |
-| 截 4K 网页截图（第 4 步） | `python3 scripts/shot.py`（Playwright，所有工具通用，首选） | 也可以用 Chrome DevTools MCP；用户已在 AI 工具内置浏览器登录时，用 `snapshot.js` + `snapshot.py`（见 `references/素材获取.md`） |
-| 任务清单（全程） | Cursor / Claude Code 的 TodoWrite 一类工具 | 在回复里维护一份进度清单 |
+| 结构化提问（第 2 步） | 工具自带的选择题能力（如 `AskQuestion`、`AskUserQuestion`，或本机自备的提问工具） | 在回复里用编号列出问题和选项（第一项写推荐），请用户按编号回复 |
+| 生成风格样帧、背景、角色（第 2、4 步） | Cursor 的 `GenerateImage`、Codex 的图像生成（pi 本身不带生图，装了生图 MCP / 扩展才用） | 用 HTML/CSS 或 Remotion 代码画一张 1920×1080 的样帧，`node scripts/stills.mjs` 或 Playwright 截出来；角色类风格用 emoji / SVG 示意 |
+| 联网搜索与抓取（第 1、4 步） | firecrawl、工具自带的网页搜索 / 抓取（pi 里可配 firecrawl MCP） | `curl` + 读 HTML；GitHub 数据用 `gh api` |
+| 截 4K 网页截图（第 4 步） | `python3 scripts/shot.py`（Playwright，所有工具通用，首选） | 也可以用 Chrome DevTools MCP；用户已在 AI 工具内置浏览器登录时，用 `snapshot.js` + `snapshot.py`（见 `references/素材获取.md`）。pi 没有内置浏览器：需要登录就用 `shot.py --login` 弹出的 Chrome 窗口 |
+| 看截图 / 联系表审图（第 8 步） | pi 的 `read` 工具直接读图片（`read out/sheet.jpg`） | 用图片查看器打开 `out/sheet.jpg` |
+| 任务清单（全程） | Cursor / Claude Code 的 TodoWrite 一类工具 | 在回复里维护一份进度清单（pi 没有内置 todo 工具，也可以在工程 `out/` 里记一份） |
 
 ---
 
@@ -133,7 +136,7 @@ Skill 用法另有四条约定：
 
 照 `references/需求问询.md` 执行。要点：
 
-- 用结构化提问工具提问，**每个问题都给出针对这个产品的推荐项**，并附上理由。
+- 用结构化提问工具提问（有自带的提问 / 选择题工具就用它；没有就在回复里列编号选项，推荐项放第一），一轮 5~8 个问题一次提交，选项里带理由，**每个问题都给出针对这个产品的推荐项**，并附上理由。
 - 必问维度：交付形式、画幅时长、受众、**风格方向**、**叙事结构**、**开场钩子**（痛点还是核心亮点）、高潮镜头、声音方案、**真实截图来源**（公开页面够不够、需不需要用户登录）、素材版权边界、网址与 CTA、导出规格、中途审阅方式。
 - **声音方案按用户条件给选项**：有 ElevenLabs 账号时推荐「按分镜作曲 + AI 旁白」；没有账号时推荐「曲库配乐 + 大字幕」，并告诉用户配上 key 后能多出什么。音色不在这一轮定，写好旁白稿后再出试听（见第 7 步）。
 - 时长默认推荐 **45~60 秒**；超过 60 秒必须有用户明确要求，并在需求确认里写明理由。
@@ -209,7 +212,7 @@ npm run fonts && npm run mix && npm run check:assets && npm run lint
 node scripts/stills.mjs --scenes && python3 scripts/sheet.py      # 打开 out/sheet.jpg 逐张审
 ```
 
-审图发现问题 → 修 → 重截，直到清单全过。关键过渡处再补指定时刻的截图（`node scripts/stills.mjs 11.4 11.6 …`）。
+审图发现问题 → 修 → 重截，直到清单全过。关键过渡处再补指定时刻的截图（`node scripts/stills.mjs 11.4 11.6 …`）。用 pi 时直接 `read out/sheet.jpg` 看联系表，可疑的单张 `read out/stills/<名字>.jpg` 放大看。
 全部通过后渲染一版 `npm run render:preview` 快速通看。
 
 ### 9. 导出与交付
@@ -224,7 +227,7 @@ python3 scripts/check_video.py out/final-4k.mp4 --scale 2      # 必须 0 ERROR�
 - 不要在 `<工具目录>/template` 里跑会生成文件的命令（`mix`、`render`、`fonts`），产物会被复制进以后每个新项目；要试就先复制一份到 `/tmp/x` 再跑。
 - 只改了声音（换音色、改旁白、调混音）时不用重渲染：`npm run mix` 后用 ffmpeg 把 `public/audio/mix.wav` 换进成片（`-c:v copy`，见 `references/配音.md` 第 6 节），再跑成片闸门。
 - 用户说「运行」或要看成品时，**只打开一个播放源**（MP4 或网页版二选一）。两个同时放会被听成「回音」。测试用的页面测完马上关。
-- 网页版用 `npm run web:serve`（`out/web`，端口 18765）或在 `网页版/` 下 `npx -y http-server . -p <端口> -a 127.0.0.1 -c-1` 起服务，再在**系统浏览器**里打开（macOS `open`、Windows `start`、Linux `xdg-open`）。http-server 支持 Range 请求，`python3 -m http.server` 不支持，音频不能按需读取。不要让用户在 AI 工具的内置浏览器里听：曾经在那里一段声音都没放出来。先查端口有没有被占（`lsof -i :<端口>`）：被别的项目占了就换个端口，不要停掉别人的服务。
+- 网页版用 `npm run web:serve`（`out/web`，端口 18765）或在 `网页版/` 下 `npx -y http-server . -p <端口> -a 127.0.0.1 -c-1` 起服务，再在**系统浏览器**里打开（macOS `open`、Windows `start`、Linux `xdg-open`）。http-server 支持 Range 请求，`python3 -m http.server` 不支持，音频不能按需读取。不要让用户在 AI 工具的内置浏览器里听：曾经在那里一段声音都没放出来（pi 没有内置浏览器，直接 `xdg-open` / `open` / `start` 系统浏览器）。先查端口有没有被占（`lsof -i :<端口>`）：被别的项目占了就换个端口，不要停掉别人的服务。
 - 第一次加旁白时，原来的无旁白版保留为 `宣传片 4K 纯音乐.mp4`；之后改音乐用 `python3 scripts/mix.py --no-vo` 出 `out/mix-music.wav` 换进去。
 - 用户反馈「回音 / 重音」时，按 `references/配音.md` 第 7 节的顺序排查，先分清问题在文件里还是在播放器里。
 - 汇报：先说结果（文件位置、规格、时长），再说关键创作决定，最后列出**需要用户亲自确认的点**（尤其是声音——AI 听不到音频，只能靠波形分析）。
